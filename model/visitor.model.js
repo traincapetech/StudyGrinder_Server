@@ -1,29 +1,32 @@
 import mongoose from "mongoose";
 
+/**
+ * Unique Visitor Model
+ * Tracks unique browser visitors via persistent anonymous visitor IDs.
+ *
+ * Important Distinction:
+ * - This model tracks UNIQUE BROWSER VISITORS.
+ * - Different browsers, incognito sessions, or cleared localStorage will generate new visitor IDs.
+ * - No PII (IP address, names, emails) is stored here to ensure complete visitor privacy.
+ * - visitorId has a unique index to guarantee atomic uniqueness and prevent duplicate counts.
+ */
 const visitorSchema = new mongoose.Schema({
-  // Hashed fingerprint: IP + User-Agent so we never store raw PII
-  fingerprint: {
+  visitorId: {
     type: String,
     required: true,
     unique: true,
+    index: true,
+    trim: true,
   },
-  // Last time this unique visitor was seen
-  lastSeen: {
-    type: Date,
-    default: Date.now,
-  },
-  // Total unique visitor count is just the document count, but we
-  // also track first visit date for analytics
   firstSeen: {
     type: Date,
     default: Date.now,
   },
+  lastSeen: {
+    type: Date,
+    default: Date.now,
+  },
 });
-
-// TTL index: remove old fingerprints after 24 hours so the same
-// visitor counts again the next day (standard unique-daily-visitor behaviour).
-// If you want lifetime unique visitors, remove this index.
-visitorSchema.index({ lastSeen: 1 }, { expireAfterSeconds: 86400 });
 
 const Visitor = mongoose.model("Visitor", visitorSchema);
 
