@@ -24,6 +24,7 @@ import internRouter from "./routes/intern.routes.js";
 import { videoCourseRouter } from "./routes/videoCourse.routes.js";
 
 import registrationRouter from "./routes/registration.routes.js";
+import visitorRouter from "./routes/visitor.routes.js";
 
 dotenv.config();
 
@@ -110,6 +111,8 @@ app.use("/chat", chatRouter);
 app.use("/consultant", consultantRouter);
 app.use("/interns", internRouter);
 app.use("/video-courses", videoCourseRouter);
+app.use("/visitors", visitorRouter);
+app.use("/api/visitors", visitorRouter);
 
 // ✅ Home Endpoint
 app.get("/", (req, res) => {
